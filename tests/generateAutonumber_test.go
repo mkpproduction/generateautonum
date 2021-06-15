@@ -45,10 +45,24 @@ func TestGenerateAutonumber(t *testing.T) {
 	repo := genautonum.NewRepository(nil , nil, mongoConn)
 
 	genRepository := genautonum.NewGenerateAutonumberRepository(repo)
-	outputDocNo, err := genRepository.AutonumberValue("PPL-000000000000001-20210602-", 0)
+	outputDocNo, err := genRepository.AutonumberValue("", 15)
 	if err != nil {
 		fmt.Println("Error Output:", err.Error())
 	}
 
 	fmt.Println("Output Doc No:", outputDocNo)
 }
+
+//func TestGenerateAutonumberWithDatatype(t *testing.T) {
+//
+//	mongoConn := ConnectMongo(ctx)
+//	repo := genautonum.NewRepository(nil , nil, mongoConn)
+//
+//	genRepository := genautonum.NewGenerateAutonumberRepository(repo)
+//	outputDocNo, err := genRepository.AutonumberValueWithDatatype("PPL", "PPL-00000001-20210101-", 15)
+//	if err != nil {
+//		fmt.Println("Error Output:", err.Error())
+//	}
+//
+//	fmt.Println("Output Doc No:", outputDocNo)
+//}
