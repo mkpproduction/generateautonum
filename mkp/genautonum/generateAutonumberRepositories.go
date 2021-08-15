@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -120,7 +121,8 @@ func (ctx generateAutonumberRepository) AutonumberValueWithDatatype(datatype str
 
 	autonumberNo := ""
 	if zeroPadding != 0 {
-		lpad := leftPad(strconv.Itoa(autonumber.SeqValue), "0", autonumber.LeadingZero)
+		iSeq, _ := strconv.ParseInt(strconv.Itoa(autonumber.SeqValue), 10, 64)
+		lpad := padLeft(iSeq, autonumber.LeadingZero)
 		autonumberNo = fmt.Sprintf("%s%s", prefix, lpad)
 	} else {
 		autonumberNo = fmt.Sprintf("%s%s", prefix, strconv.Itoa(autonumber.SeqValue))
@@ -131,4 +133,35 @@ func (ctx generateAutonumberRepository) AutonumberValueWithDatatype(datatype str
 
 func leftPad(s string, padStr string, pLen int) string {
 	return strings.Repeat(padStr, pLen) + s
+}
+
+func padLeft(v int64, length int) string {
+	abs := math.Abs(float64(v))
+	var padding int
+	if v != 0 {
+		min := math.Pow10(length - 1)
+
+		if min-abs > 0 {
+			l := math.Log10(abs)
+			if l == float64(int64(l)) {
+				l++
+			}
+			padding = length - int(math.Ceil(l))
+		}
+	} else {
+		padding = length - 1
+	}
+	builder := strings.Builder{}
+	if v < 0 {
+		length = length + 1
+	}
+	builder.Grow(length * 4)
+	if v < 0 {
+		builder.WriteRune('-')
+	}
+	for i := 0; i < padding; i++ {
+		builder.WriteRune('0')
+	}
+	builder.WriteString(strconv.FormatInt(int64(abs), 10))
+	return builder.String()
 }
