@@ -105,3 +105,19 @@ func ToString(i interface{}) string {
 
 	return logString
 }
+
+func ResponseJSON(success bool, code string, msg string, result interface{}, addMsg ...string) Response {
+	tm := time.Now()
+	response := Response{
+		Meta: Meta{
+			Code:          code,
+			Success:       success,
+			Message:       msg,
+			AdditionalMsg: addMsg,
+		},
+		Result:           result,
+		ResponseDatetime: tm,
+	}
+
+	return response
+}
