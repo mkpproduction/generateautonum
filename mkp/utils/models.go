@@ -14,3 +14,9 @@ type Meta struct {
 	Message       string   `json:"message"`
 	AdditionalMsg []string `json:"additionalMsg"`
 }
+
+type Header struct {
+	ID       float64 `json:"id"`
+	TenantId float64 `json:"tenantId"`
+	Username string  `json:"username"`
+}
