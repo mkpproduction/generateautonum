@@ -1,7 +1,11 @@
 package mkputils
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
 	"database/sql"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -121,4 +125,51 @@ func ResponseJSON(success bool, code string, msg string, result interface{}, add
 	}
 
 	return response
+}
+
+func CreateCredential(secret string, value string) (result string, err error) {
+
+	// Create a new HMAC by defining the hash type and the key (as byte array)
+	h := hmac.New(sha256.New, []byte(secret))
+
+	// Write Data to it
+	h.Write([]byte(value))
+
+	// Get result and encode as hexadecimal string
+	sha := hex.EncodeToString(h.Sum(nil))
+
+	db, err := decodeHex([]byte(sha))
+	if err != nil {
+		fmt.Printf("failed to decode hex: %s", err)
+		return
+	}
+
+	f := base64Encode(db)
+
+	return string(f), err
+}
+
+func base64Encode(input []byte) []byte {
+	eb := make([]byte, base64.StdEncoding.EncodedLen(len(input)))
+	base64.StdEncoding.Encode(eb, input)
+
+	return eb
+}
+
+func decodeHex(input []byte) ([]byte, error) {
+	db := make([]byte, hex.DecodedLen(len(input)))
+	_, err := hex.Decode(db, input)
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
+}
+
+func Base64ToHex(s string) string {
+	p, err := base64.StdEncoding.DecodeString(s)
+	if err != nil {
+		// handle error
+	}
+	h := hex.EncodeToString(p)
+	return h
 }
