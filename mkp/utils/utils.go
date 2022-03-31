@@ -14,11 +14,11 @@ import (
 )
 
 func DatetimeNow() string {
-	return time.Now().Format("2006-01-02 15:04:05")
+	return time.Now().Format("20060102150405")
 }
 
 func DateNow() string {
-	return time.Now().Format("2006-01-02")
+	return time.Now().Format("20060102")
 }
 
 func ReplaceSQL(old, searchPattern string) string {
