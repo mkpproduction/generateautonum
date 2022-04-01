@@ -10,7 +10,7 @@ func GetHeader(ctx echo.Context) Header {
 	claims := user.Claims.(jwt.MapClaims)
 
 	return Header{
-		UID:      claims["id"].(float64),
+		UID:      claims["uid"].(float64),
 		TID:      claims["tid"].(float64),
 		PID:      claims["pid"].(float64),
 		OID:      claims["oid"].(float64),
