@@ -1,6 +1,8 @@
 package mkputils
 
 import (
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/hmac"
 	"crypto/sha256"
 	"database/sql"
@@ -172,4 +174,36 @@ func Base64ToHex(s string) string {
 	}
 	h := hex.EncodeToString(p)
 	return h
+}
+
+// Decrypt from base64 to decrypted string
+func Aes256Decrypt(cryptoText string, saltKey ...interface{}) (interface{}, error) {
+	var result interface{}
+	keyText := ""
+	if len(saltKey) > 0 {
+		keyText = saltKey[0].(string)
+	}
+	key := []byte(keyText)
+	ciphertext, _ := base64.URLEncoding.DecodeString(cryptoText)
+
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		return result, err
+	}
+
+	// The IV needs to be unique, but not secure. Therefore it's common to
+	// include it at the beginning of the ciphertext.
+	if len(ciphertext) < aes.BlockSize {
+		return result, err
+	}
+	iv := ciphertext[:aes.BlockSize]
+	ciphertext = ciphertext[aes.BlockSize:]
+
+	stream := cipher.NewCFBDecrypter(block, iv)
+
+	// XORKeyStream can work in-place if the two arguments are the same.
+	stream.XORKeyStream(ciphertext, ciphertext)
+	unMarshall := json.Unmarshal(ciphertext, &result)
+	fmt.Println(unMarshall)
+	return result, nil
 }
