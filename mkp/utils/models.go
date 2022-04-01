@@ -16,7 +16,10 @@ type Meta struct {
 }
 
 type Header struct {
-	ID       float64 `json:"id"`
-	TenantId float64 `json:"tenantId"`
+	UID      float64 `json:"uid"`
+	TID      float64 `json:"tid"`
+	PID      float64 `json:"pid"`
+	OID      float64 `json:"oid"`
+	RID      float64 `json:"rid"`
 	Username string  `json:"username"`
 }
