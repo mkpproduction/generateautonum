@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/labstack/echo"
+	echov4 "github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 	"reflect"
 	"strconv"
@@ -65,6 +66,17 @@ func InArray(v interface{}, in interface{}) (ok bool, i int) {
 }
 
 func BindValidateStruct(ctx echo.Context, i interface{}) error {
+	if err := ctx.Bind(i); err != nil {
+		return err
+	}
+
+	if err := ctx.Validate(i); err != nil {
+		return err
+	}
+	return nil
+}
+
+func BindValidateStructV4(ctx echov4.Context, i interface{}) error {
 	if err := ctx.Bind(i); err != nil {
 		return err
 	}
