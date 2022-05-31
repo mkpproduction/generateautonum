@@ -2,6 +2,7 @@ package mkputils
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	jtwgo "github.com/golang-jwt/jwt"
 	"github.com/labstack/echo"
 	echov4 "github.com/labstack/echo/v4"
 )
@@ -21,8 +22,8 @@ func GetHeader(ctx echo.Context) Header {
 }
 
 func GetHeaderV4(ctx echov4.Context) Header {
-	user := ctx.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
+	user := ctx.Get("user").(*jtwgo.Token)
+	claims := user.Claims.(jtwgo.MapClaims)
 
 	return Header{
 		UID:      claims["uid"].(float64),
