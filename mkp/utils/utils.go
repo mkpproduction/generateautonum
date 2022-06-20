@@ -29,6 +29,43 @@ func DateNow() string {
 	return time.Now().Format("20060102")
 }
 
+func DatetimeConverter(dtm string, layout string) string {
+
+	if dtm == "" {
+		return ""
+	}
+
+	dt := dtm[:len(dtm)-6]
+	dt2 := dtm[len(dtm)-6:]
+	year, _ := strconv.Atoi(dt[:len(dt)-4])
+	month, _ := strconv.Atoi(dt[4 : len(dt)-2])
+	day, _ := strconv.Atoi(dt[len(dt)-2:])
+
+	mm2 := dt2[1 : len(dt2)-2]
+
+	hr, _ := strconv.Atoi(dt2[:len(dt2)-4])
+	mm, _ := strconv.Atoi(mm2[len(mm2)-2:])
+	ss, _ := strconv.Atoi(dt2[4 : len(dt2)-0])
+
+	var time2 = time.Date(year, time.Month(month), day, hr, mm, ss, 0, time.UTC)
+
+	return time2.Format(layout)
+}
+
+func DateConverter(dt string, layout string) string {
+	if dt == "" {
+		return ""
+	}
+
+	year, _ := strconv.Atoi(dt[:len(dt)-4])
+	month, _ := strconv.Atoi(dt[4 : len(dt)-2])
+	day, _ := strconv.Atoi(dt[len(dt)-2:])
+
+	var tm = time.Date(year, time.Month(month), day, 00, 00, 0, 0, time.UTC)
+
+	return tm.Format(layout)
+}
+
 func ReplaceSQL(old, searchPattern string) string {
 	tmpCount := strings.Count(old, searchPattern)
 	for m := 1; m <= tmpCount; m++ {
