@@ -257,7 +257,7 @@ func Aes256Decrypt(cryptoText string, saltKey ...interface{}) (interface{}, erro
 	return result, nil
 }
 
-func ReplaceNullLongValue(ID string) int64 {
+func QueryParamNullLongValue(ID string) int64 {
 	result := int64(-99)
 	val, _ := strconv.ParseInt(ID, 10, 64)
 
