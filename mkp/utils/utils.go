@@ -14,6 +14,7 @@ import (
 	"github.com/labstack/echo"
 	echov4 "github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"reflect"
 	"strconv"
 	"strings"
@@ -72,6 +73,20 @@ func ReplaceSQL(old, searchPattern string) string {
 		old = strings.Replace(old, searchPattern, "$"+strconv.Itoa(m), 1)
 	}
 	return old
+}
+
+func ValBackDate(pDate string) error {
+	dateNow, _ := time.Parse("2006-01-02", DateConverter(DateNow(), "2006-01-02"))
+	date2Parse, _ := time.Parse("2006-01-02", DateConverter(pDate, "2006-01-02"))
+
+	log.Println("DateNow", dateNow)
+	log.Println("DateTo", date2Parse)
+
+	if date2Parse.Before(dateNow) {
+		return errors.New(fmt.Sprintf("compare date %s must be greather or equal then %s", DateConverter(pDate, "2006-01-02"), DateConverter(DateNow(), "2006-01-02")))
+	}
+
+	return nil
 }
 
 func ValBlankOrNull(request interface{}, keyName ...string) error {
