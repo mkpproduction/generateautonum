@@ -4,19 +4,21 @@ import (
 	"context"
 	"fmt"
 	"github.com/mkpproduction/mkp-sdk-go/mkp/genautonum"
+	mkputils "github.com/mkpproduction/mkp-sdk-go/mkp/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"testing"
 )
 
 var (
-	ctx = context.Background()
+	ctx       = context.Background()
 	MONGOHost = "127.0.0.1"
 	MONGOPort = "27017"
-	MONGODB = "autonumber"
+	MONGODB   = "autonumber"
 )
 
-func ConnectMongo(ctx context.Context, DBCollection... string) *mongo.Database  {
+func ConnectMongo(ctx context.Context, DBCollection ...string) *mongo.Database {
 	connection := fmt.Sprintf("mongodb://%s:%s", MONGOHost, MONGOPort)
 	fmt.Println("Connection Mongo:", connection)
 	clientOptions := options.Client()
@@ -42,7 +44,7 @@ func ConnectMongo(ctx context.Context, DBCollection... string) *mongo.Database  
 func TestGenerateAutonumber(t *testing.T) {
 
 	mongoConn := ConnectMongo(ctx)
-	repo := genautonum.NewRepository(nil , nil, mongoConn)
+	repo := genautonum.NewRepository(nil, nil, mongoConn)
 
 	genRepository := genautonum.NewGenerateAutonumberRepository(repo)
 	outputDocNo, err := genRepository.AutonumberValue("", 15)
@@ -51,6 +53,12 @@ func TestGenerateAutonumber(t *testing.T) {
 	}
 
 	fmt.Println("Output Doc No:", outputDocNo)
+}
+
+func TestPrefixAutonumber(t *testing.T) {
+	prefix := mkputils.PrefixAutonumber("CBT/CF", "200601")
+
+	log.Println("Prefix", prefix)
 }
 
 //func TestGenerateAutonumberWithDatatype(t *testing.T) {
