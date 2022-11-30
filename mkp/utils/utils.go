@@ -289,5 +289,5 @@ func PrefixAutonumber(constants string, layout string) string {
 	romanYear, romanMonth := NewRoman().ToRoman(year), NewRoman().ToRoman(month)
 	yearMonth := DateConverter(DateNow(), layout)
 
-	return fmt.Sprintf("%s/%s/%s/%s", constants, yearMonth, romanYear, romanMonth)
+	return fmt.Sprintf("%s/%s/%s/%s/", constants, yearMonth, romanYear, romanMonth)
 }
