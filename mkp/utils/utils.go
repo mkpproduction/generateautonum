@@ -284,10 +284,10 @@ func QueryParamNullLongValue(ID string, defValue int64) int64 {
 }
 
 func PrefixAutonumber(constants string, layout string) string {
-	year, _ := strconv.Atoi(DateConverter(DateNow(), "06"))
-	month, _ := strconv.Atoi(DateConverter(DateNow(), "01"))
-	romanYear, romanMonth := NewRoman().ToRoman(year), NewRoman().ToRoman(month)
+	//year, _ := strconv.Atoi(DateConverter(DateNow(), "06"))
+	//month, _ := strconv.Atoi(DateConverter(DateNow(), "01"))
+	//romanYear, romanMonth := NewRoman().ToRoman(year), NewRoman().ToRoman(month)
 	yearMonth := DateConverter(DateNow(), layout)
 
-	return fmt.Sprintf("%s/%s/%s/%s/", constants, yearMonth, romanYear, romanMonth)
+	return fmt.Sprintf("%s.%s.", constants, yearMonth)
 }
