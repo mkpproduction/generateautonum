@@ -15,6 +15,7 @@ import (
 	echov4 "github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 	"log"
+	"math"
 	"reflect"
 	"strconv"
 	"strings"
@@ -290,4 +291,37 @@ func PrefixAutonumber(constants string, layout string) string {
 	yearMonth := DateConverter(DateNow(), layout)
 
 	return fmt.Sprintf("%s.%s.", constants, yearMonth)
+}
+
+type CalcAmount struct {
+	Amount    float64
+	FlgIncTax string
+	TaxPct    float64
+	Round     uint
+	RoundMode string
+}
+
+func CalcTaxAmount(data CalcAmount) float64 {
+
+	totalAmount := float64(0)
+	if data.RoundMode == "RD" {
+		totalAmount = math.Trunc(data.Amount * (data.TaxPct / 100))
+	} else {
+		totalAmount = roundFloat(data.Amount*(data.TaxPct/100), data.Round)
+	}
+
+	if data.FlgIncTax == "Y" {
+		if data.RoundMode == "RD" {
+			totalAmount = data.Amount - math.Trunc(data.Amount*100/(100+data.TaxPct))
+		} else {
+			totalAmount = data.Amount - roundFloat(data.Amount*100/(100+data.TaxPct), data.Round)
+		}
+	}
+
+	return totalAmount
+}
+
+func roundFloat(val float64, precision uint) float64 {
+	ratio := math.Pow(10, float64(precision))
+	return math.Round(val*ratio) / ratio
 }
