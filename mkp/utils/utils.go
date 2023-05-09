@@ -314,7 +314,7 @@ func CalcTaxAmount(data CalcAmount) float64 {
 		if data.RoundMode == "RD" {
 			totalAmount = data.Amount - math.Trunc(data.Amount*100/(100+data.TaxPct))
 		} else {
-			totalAmount = data.Amount - roundFloat(data.Amount*100/(100+data.TaxPct), data.Round)
+			totalAmount = roundFloat(data.Amount-data.Amount*100/(100+data.TaxPct), data.Round)
 		}
 	}
 

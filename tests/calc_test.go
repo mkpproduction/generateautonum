@@ -9,7 +9,7 @@ import (
 func TestCalcTaxAmount(t *testing.T) {
 
 	amount := mkputils.CalcTaxAmount(mkputils.CalcAmount{
-		Amount:    2869930.00,
+		Amount:    2404500,
 		FlgIncTax: "Y",
 		TaxPct:    11,
 		Round:     2,
@@ -17,4 +17,5 @@ func TestCalcTaxAmount(t *testing.T) {
 	})
 
 	fmt.Println("Amount:", amount)
+
 }
