@@ -11,11 +11,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	echov4 "github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"math"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -324,4 +326,19 @@ func CalcTaxAmount(data CalcAmount) float64 {
 func roundFloat(val float64, precision uint) float64 {
 	ratio := math.Pow(10, float64(precision))
 	return math.Round(val*ratio) / ratio
+}
+
+func GetEnv(key string, value ...string) string {
+	if err := godotenv.Load(".env"); err != nil {
+		panic("Error Load file .env not found")
+	}
+
+	if os.Getenv(key) != "" {
+		return os.Getenv(key)
+	} else {
+		if len(value) > 0 {
+			return value[0]
+		}
+		return ""
+	}
 }
