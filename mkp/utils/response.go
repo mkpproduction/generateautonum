@@ -1,20 +1,30 @@
 package mkputils
 
 import (
+	"fmt"
 	"github.com/labstack/echo/v4"
+	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
 const (
 	// Success Response Code
-	Success         = 200
+	Success   = 200
+	Created   = 1001
+	Edited    = 1002
+	Removed   = 1003
+	FetchData = 1004
+
+	Successfully    = 200200
 	StatusCreated   = 2001001
 	StatusEdited    = 2001002
 	StatusRemoved   = 2001003
 	StatusFetchData = 2001004
 
 	// Invalid Response Code
+	InvalidEntity    = 400400
 	InvalidFormat    = 400
 	InvalidCreated   = 4001001
 	InvalidEdited    = 4001002
@@ -26,12 +36,17 @@ const (
 )
 
 var statusText = map[int]string{
-	Success:         "successfully",
+	Created:         "created",
+	Edited:          "edited",
+	Removed:         "removed",
+	FetchData:       "fetch data",
+	Successfully:    "successfully",
 	StatusCreated:   "successfully created",
 	StatusEdited:    "successfully edited",
 	StatusRemoved:   "successfully removed",
 	StatusFetchData: "successfully fetch data",
 
+	InvalidEntity:    "unprocessable entity",
 	InvalidFormat:    "invalid format",
 	InvalidCreated:   "invalid created",
 	InvalidEdited:    "invalid edited",
@@ -42,20 +57,24 @@ var statusText = map[int]string{
 	StatusFound:    "found",
 }
 
-func getResponseText(code int) string {
-	return statusText[0]
+func getResponseText(statusCode int, code int) string {
+	str := fmt.Sprintf("%d%d", statusCode, code)
+	strFtm, _ := strconv.Atoi(str)
+
+	log.Println("strFmt:", strFtm)
+
+	return statusText[strFtm]
 }
 
 type meta struct {
+	Success         bool   `json:"success"`
 	ResponseCode    int    `json:"responseCode"`
 	ResponseMessage string `json:"responseMessage"`
-	Success         bool   `json:"success"`
 	Message         string `json:"message"`
 }
 
 type (
 	response struct {
-		StatusCode       int         `json:"statusCode"`
 		Meta             meta        `json:"meta"`
 		Result           interface{} `json:"result"`
 		ResponseDatetime time.Time   `json:"responseDatetime"`
@@ -65,12 +84,10 @@ type (
 
 func defaultResponseOK() response {
 	return response{
-		StatusCode: http.StatusFound,
 		Meta: meta{
-			ResponseCode:    Success,
-			ResponseMessage: getResponseText(Success),
-			Success:         true,
-			Message:         EMPTY_VALUE,
+			Success:      true,
+			ResponseCode: Success,
+			Message:      EMPTY_VALUE,
 		},
 		ResponseDatetime: time.Now(),
 	}
@@ -78,38 +95,28 @@ func defaultResponseOK() response {
 
 func defaultResponseFail() response {
 	return response{
-		StatusCode: http.StatusBadRequest,
 		Meta: meta{
-			ResponseCode:    InvalidFormat,
-			ResponseMessage: getResponseText(InvalidFormat),
-			Success:         false,
-			Message:         EMPTY_VALUE,
+			Success:      false,
+			ResponseCode: InvalidFormat,
+			Message:      EMPTY_VALUE,
 		},
 		ResponseDatetime: time.Now(),
 	}
 }
 
-func SetStatusCode(code int) optFunc {
-	return func(r *response) {
-		r.StatusCode = code
-	}
-
-}
-
-func SetResponseCode(code int) optFunc {
+func Code(code int) optFunc {
 	return func(r *response) {
 		r.Meta.ResponseCode = code
-		r.Meta.ResponseMessage = getResponseText(code)
 	}
 }
 
-func SetMessage(message string) optFunc {
+func Message(message string) optFunc {
 	return func(r *response) {
 		r.Meta.Message = message
 	}
 }
 
-func SetResult(result interface{}) optFunc {
+func Result(result interface{}) optFunc {
 	return func(r *response) {
 		r.Result = result
 	}
@@ -122,11 +129,11 @@ func ResponseOK(ctx echo.Context, opts ...optFunc) error {
 		fn(&o)
 	}
 
-	return ctx.JSON(o.StatusCode, &response{
+	return ctx.JSON(http.StatusOK, &response{
 		Meta: meta{
-			ResponseCode:    o.Meta.ResponseCode,
-			ResponseMessage: o.Meta.ResponseMessage,
 			Success:         o.Meta.Success,
+			ResponseCode:    o.Meta.ResponseCode,
+			ResponseMessage: getResponseText(http.StatusOK, o.Meta.ResponseCode),
 			Message:         o.Meta.Message,
 		},
 		Result:           o.Result,
@@ -141,11 +148,11 @@ func ResponseFAIL(ctx echo.Context, opts ...optFunc) error {
 		fn(&o)
 	}
 
-	return ctx.JSON(o.StatusCode, &response{
+	return ctx.JSON(http.StatusBadRequest, &response{
 		Meta: meta{
-			ResponseCode:    o.Meta.ResponseCode,
-			ResponseMessage: o.Meta.ResponseMessage,
 			Success:         o.Meta.Success,
+			ResponseCode:    o.Meta.ResponseCode,
+			ResponseMessage: getResponseText(http.StatusBadRequest, o.Meta.ResponseCode),
 			Message:         o.Meta.Message,
 		},
 		Result:           o.Result,
