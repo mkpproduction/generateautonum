@@ -173,6 +173,16 @@ func DBTransaction(db *sql.DB, txFunc func(*sql.Tx) error) (err error) {
 	return err
 }
 
+//func CreatePrepareContext(ctx context.Context, query string, db *sql.DB, tx *sql.Tx) (stmt *sql.Stmt, err error) {
+//	if tx != nil {
+//		stmt, err = tx.PrepareContext(ctx, query)
+//	} else {
+//		stmt, err = ctx.RepoDB.DB.PrepareContext(ctx.RepoDB.Context, query)
+//	}
+//
+//	return stmt, nil
+//}
+
 func ToString(i interface{}) string {
 	log, _ := json.Marshal(i)
 	logString := string(log)
