@@ -173,16 +173,6 @@ func DBTransaction(db *sql.DB, txFunc func(*sql.Tx) error) (err error) {
 	return err
 }
 
-//func CreatePrepareContext(ctx context.Context, query string, db *sql.DB, tx *sql.Tx) (stmt *sql.Stmt, err error) {
-//	if tx != nil {
-//		stmt, err = tx.PrepareContext(ctx, query)
-//	} else {
-//		stmt, err = ctx.RepoDB.DB.PrepareContext(ctx.RepoDB.Context, query)
-//	}
-//
-//	return stmt, nil
-//}
-
 func ToString(i interface{}) string {
 	log, _ := json.Marshal(i)
 	logString := string(log)
@@ -331,6 +321,41 @@ func CalcTaxAmount(data CalcAmount) float64 {
 	}
 
 	return totalAmount
+}
+
+type ResultCalcDisc struct {
+	DiscType   string
+	DiscAmount float64
+	DiscPct    float64
+}
+
+func CalcDisc(flgDiscType string, discValue float64, amountValue float64) ResultCalcDisc {
+
+	var discAmt float64
+	var discPct float64
+	if flgDiscType == "P" {
+		disc := discPctToAmt(amountValue, discValue)
+		discPct = discValue
+		discAmt = disc
+	} else if flgDiscType == "A" {
+		disc := discAmtToPct(amountValue, discValue)
+		discPct = disc
+		discAmt = discValue
+	}
+
+	return ResultCalcDisc{
+		DiscType:   flgDiscType,
+		DiscAmount: discAmt,
+		DiscPct:    discPct,
+	}
+}
+
+func discPctToAmt(a float64, d float64) float64 {
+	return (d / 100) * a
+}
+
+func discAmtToPct(a float64, d float64) float64 {
+	return (d / a) * 100
 }
 
 func roundFloat(val float64, precision uint) float64 {
